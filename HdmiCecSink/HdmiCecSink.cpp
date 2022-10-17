@@ -3031,12 +3031,14 @@ namespace WPEFramework
               return;
             }
 
-            LOGINFO("Got : INITIATE_ARC  and current Arcstate is %d\n",_instance->m_currentArcRoutingState);
+           if(hdmiInputs[HdmiArcPortID].m_isConnected) {
 
-            if (m_arcStartStopTimer.isActive())
-            {
-               m_arcStartStopTimer.stop();
-            }
+              LOGINFO("Got : INITIATE_ARC  and current Arcstate is %d\n",_instance->m_currentArcRoutingState);
+
+              if (m_arcStartStopTimer.isActive())
+              {
+                  m_arcStartStopTimer.stop();
+              }
 		{
             	  std::lock_guard<std::mutex> lock(_instance->m_arcRoutingStateMutex);
 	          _instance->m_currentArcRoutingState = ARC_STATE_ARC_INITIATED;
@@ -3045,9 +3047,13 @@ namespace WPEFramework
                   LOGINFO("Got : ARC_INITIATED  and notify Device setting");
                   params["status"] = string("success");
                   sendNotify(eventString[HDMICECSINK_EVENT_ARC_INITIATION_EVENT], params); 
-	  
+	    }
+            else {
+                  LOGINFO("Got : ARC_INITIATED Before HPD Skipped ");
+            }
 
        }
+
        void HdmiCecSink::Process_TerminateArc()
        {
             JsonObject params;
